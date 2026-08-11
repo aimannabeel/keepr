@@ -36,4 +36,4 @@ Before using real documents, I need to build proper encrypted storage and think 
 
 ## Current status
 
-This project is at the setup stage. The Python virtual environment and initial dependencies are installed.
+Keepr has a working local FastAPI backend and a basic frontend page. The page can call the backend health route and display the response in the browser.
