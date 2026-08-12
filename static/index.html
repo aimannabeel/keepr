@@ -13,9 +13,13 @@
       <h1>Keepr</h1>
       <p class="intro">A private place to store, organise, and find important documents.</p>
 
-      <button id="checkBackendButton">Check backend</button>
 
-      <p id="backendStatus">Backend not checked yet</p>
+      <div class="file-checker">
+        <label class="file-label" for="documentInput">Choose a sample document</label>
+        <input id="documentInput" type="file" accept=".pdf,image/*">
+
+        <p id="fileDetails">No file selected yet</p>
+      </div>
     </section>
   </main>
 

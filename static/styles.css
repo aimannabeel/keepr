@@ -43,18 +43,22 @@ h1 {
     color: #4f5f55;
 }
 
-button {
-    margin-top: 28px;
-    padding: 12px 16px;
-    border: 1px solid #1f2923;
-    background: #1f2923;
-    border-radius: 32px;
-    color: white;
-    font-size: 14px;
-    cursor: pointer;
+#documentInput {
+    display: none;
 }
 
-#backendStatus{
-  margin-top: 16px;
-  color: #5f7f68;
+.file-label {
+  display: inline-block;
+  margin-top: 28px;
+  padding: 12px 16px;
+  border: 1px solid #d8ddd6;
+  border-radius: 32px;
+  background: #1f2923;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.file-label:hover {
+  border-color: #5f7f68;
 }
