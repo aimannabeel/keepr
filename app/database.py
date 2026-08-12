@@ -33,4 +33,32 @@ def save_document(filename, content_type, size):
         """, (filename, content_type, size))
     connection.commit()
     connection.close()
+
+
+def get_document_rows():
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT id, filename, content_type, size, created_at
+        FROM documents
+        ORDER BY created_at DESC
+        LIMIT 5
+    """)
+
+    rows = cursor.fetchall()
+    connection.close()
+
+    documents = []
+
+    for row in rows:
+        documents.append({
+            "id": row[0],
+            "filename": row[1],
+            "content_type": row[2],
+            "size": row[3],
+            "created_at": row[4],
+        })
+
+    return documents
     

@@ -114,6 +114,8 @@ http://127.0.0.1:8000/api/health
 - [x] Add document records
 - [x] Add intentional document save flow
 - [x] Store metadata only after the user confirms saving the document
+- [x] List recent saved document metadata
+- [x] Render recent saved documents on the page
 - [ ] Add people/document owners
 - [ ] Add document type field
 - [ ] Add current/archive status

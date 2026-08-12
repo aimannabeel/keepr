@@ -15,10 +15,12 @@ body{
   align-items: center;
   justify-content: center;
   padding: 32px;
+  transform: translateY(-32px);
+
 }
 
 .hero {
-    max-width: 640px;
+    max-width: 720px;
     text-align: center;
 }
 
@@ -36,7 +38,7 @@ h1 {
 }
 
 .intro {
-    max-width: 420px;
+    max-width: 520px;
     margin: 16px auto 0;
     font-size: 18px;
     line-height: 1.5;
@@ -49,7 +51,6 @@ h1 {
 
 .file-label {
   display: inline-block;
-  margin-top: 28px;
   padding: 12px 16px;
   border: 1px solid #d8ddd6;
   border-radius: 32px;
@@ -64,8 +65,10 @@ h1 {
 }
 
 #saveDocumentButton {
-  margin-top: 28px;
   padding: 12px 16px;
+  width: 180px;
+  display: inline-block;
+  text-align: center;
   border: 1px solid #d8ddd6;
   border-radius: 32px;
   background: #1f2923;
@@ -81,4 +84,77 @@ h1 {
 #saveDocumentButton:disabled {
   opacity: 0.45;
   cursor: not-allowed;
+}
+
+.saved-documents {
+  width: 100%;
+  margin-top: 36px;
+  border: 1px solid #d8ddd6;
+  background-color: #fffdf8;
+  border-radius: 8px;
+  text-align: left;
+  overflow: hidden;
+}
+.file-checker {
+  width: 100%;
+  max-width: 520px;
+  margin: 28px auto 0;
+  text-align: center;
+}
+
+.documents-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+  padding: 16px 20px;
+  background-color: #1f2923;
+  color: white;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.documents-header span:nth-child(1) {
+  text-align: left;
+}
+
+.documents-header span:nth-child(2) {
+  text-align: center;
+}
+
+.documents-header span:nth-child(3) {
+  text-align: right;
+}
+
+.documents-list {
+  min-height: 120px;
+}
+
+.empty-state {
+  margin: 0;
+  padding: 44px 20px;
+  text-align: center;
+  color: #7a877d;
+}
+
+.document-row{
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+  padding: 16px 20px;
+  border-top: 1px solid #e5e8e2; 
+  color: #334239;
+  font-size: 13px;
+}
+
+.document-row span:nth-child(1) {
+  text-align: left;
+  overflow-wrap: anywhere ;
+}
+
+.document-row span:nth-child(2) {
+  text-align: center;
+}
+
+.document-row span:nth-child(3) {
+  text-align: right;
 }

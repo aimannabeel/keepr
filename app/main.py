@@ -1,6 +1,6 @@
 from fastapi import FastAPI, UploadFile, File
 from fastapi.staticfiles import StaticFiles
-from app.database import create_tables, save_document
+from app.database import create_tables, save_document, get_document_rows
 
 app = FastAPI()
 create_tables()
@@ -31,5 +31,9 @@ def create_document(document: dict):
     )
 
     return {"message": "Document saved"}
+
+@app.get("/api/documents")
+def list_documents():
+    return get_document_rows()
 
 app.mount("/", StaticFiles(directory="static", html=True), name = "static")

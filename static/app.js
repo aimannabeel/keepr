@@ -1,6 +1,7 @@
 const documentInput = document.querySelector("#documentInput");
 const fileDetails = document.querySelector("#fileDetails");
 const saveDocumentButton = document.querySelector("#saveDocumentButton");
+const documentsList = document.querySelector("#documentsList");
 
 let previewedDocument = null;
 
@@ -44,6 +45,34 @@ saveDocumentButton.addEventListener("click", async () =>{
     },
     body: JSON.stringify(previewedDocument),
   });
-
+  fileDetails.textContent = "File saved successfully!";
   console.log("Saving document:", previewedDocument);
-})
+  await loadDocuments();
+});
+
+async function loadDocuments() {
+  const response = await fetch("/api/documents");
+  const documents = await response.json();
+
+  if (documents.length === 0) {
+    documentsList.innerHTML = `<p class=empty-state>No saved documents yet.</p>`;
+    return;
+  }
+
+  documentsList.innerHTML = ""
+
+  documents.forEach((savedDocument) => {
+    const documentRow = document.createElement("div");
+    documentRow.className = "document-row";
+
+    documentRow.innerHTML = `
+    <span>${savedDocument.filename}</span>
+    <span>${savedDocument.content_type}</span>
+    <span>${savedDocument.created_at}</span>
+    `;
+
+    documentsList.appendChild(documentRow);
+  })
+}
+
+loadDocuments()
