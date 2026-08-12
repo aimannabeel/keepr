@@ -60,6 +60,7 @@ static/
 requirements.txt  # Python dependencies
 README.md         # Project notes and setup instructions
 .gitignore        # Files and folders Git should ignore
+```
 
 ## Setup
 
@@ -108,9 +109,11 @@ http://127.0.0.1:8000/api/health
 
 ### Phase 2: Metadata and Database
 
-- [ ] Add SQLite database
-- [ ] Store uploaded document metadata
-- [ ] Add document records
+- [x] Add SQLite database
+- [x] Store uploaded document metadata
+- [x] Add document records
+- [x] Add intentional document save flow
+- [x] Store metadata only after the user confirms saving the document
 - [ ] Add people/document owners
 - [ ] Add document type field
 - [ ] Add current/archive status
