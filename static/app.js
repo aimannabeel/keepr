@@ -5,74 +5,129 @@ const documentsList = document.querySelector("#documentsList");
 
 let previewedDocument = null;
 
+function formatSavedDate(createdAt){
+    const normalisedCreatedAt = createdAt.includes("T")
+        ? createdAt
+        : createdAt.replace(" ", "T");
+    const savedDate = new Date(normalisedCreatedAt);
+    const now = new Date();
+
+    const savedDay = savedDate.toDateString();
+    const today = now.toDateString();
+
+    const yesterdayDate = new Date();
+    yesterdayDate.setDate(now.getDate()-1);
+    const yesterday = yesterdayDate.toDateString()
+
+    if (savedDay === today) {
+        return `Today, ${savedDate.toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+        })}`;
+    }
+
+    if (savedDay === yesterday){
+        return "Yesterday";
+    }
+
+    if (savedDate.getFullYear() === now.getFullYear()){
+        return savedDate.toLocaleDateString([], {
+            day: "2-digit",
+            month: "short",
+    });
+    }
+
+    return savedDate.toLocaleDateString([], {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+}
+
+function formatContentType(contentType) {
+    if (contentType === "application/pdf") {
+        return "PDF";
+    }
+
+    if (contentType === "image/png") {
+        return "PNG image";
+    }
+
+    if (contentType === "image/jpeg") {
+        return "JPEG image";
+    }
+
+    return contentType;
+}
+
 
 documentInput.addEventListener("change", async() => {
-  const selectedFile = documentInput.files[0];
+    const selectedFile = documentInput.files[0];
 
-  if (!selectedFile) {
-    fileDetails.textContent = "No file selected yet.";
-    previewedDocument = null;
-    saveDocumentButton.disabled = true;
-    return;
-  }
+    if (!selectedFile) {
+        fileDetails.textContent = "No file selected yet.";
+        previewedDocument = null;
+        saveDocumentButton.disabled = true;
+        return;
+    }
 
-  const formData = new FormData();
-  formData.append("document", selectedFile);
+    const formData = new FormData();
+    formData.append("document", selectedFile);
 
-  const response = await fetch("/api/documents/preview", {
-  method: "POST",
-  body: formData,
-});
+    const response = await fetch("/api/documents/preview", {
+    method: "POST",
+    body: formData,
+  });
 
-const data = await response.json();
-console.log(data);
+    const data = await response.json();
 
-fileDetails.textContent = `${data.filename} - ${data.content_type} - ${data.size} bytes`;
+    fileDetails.textContent = `${data.filename} - ${data.content_type} - ${data.size} bytes`;
 
-saveDocumentButton.disabled = false;
-previewedDocument = data;
+    saveDocumentButton.disabled = false;
+    previewedDocument = data;
 });
 
 saveDocumentButton.addEventListener("click", async () =>{
-  if (!previewedDocument) {
-    return;
-  }
+    if (!previewedDocument) {
+        return;
+    }
 
-  const response = await fetch("/api/documents", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(previewedDocument),
-  });
-  fileDetails.textContent = "File saved successfully!";
-  console.log("Saving document:", previewedDocument);
-  await loadDocuments();
-});
+    const response = await fetch("/api/documents", {
+        method: "POST",
+        headers: {
+        "Content-Type": "application/json",
+        },
+        body: JSON.stringify(previewedDocument),
+    });
+    fileDetails.textContent = "File saved successfully!";
+    saveDocumentButton.disabled = true;
+    previewedDocument = null;
+    await loadDocuments();
+    });
 
 async function loadDocuments() {
-  const response = await fetch("/api/documents");
-  const documents = await response.json();
+    const response = await fetch("/api/documents");
+    const documents = await response.json();
 
-  if (documents.length === 0) {
-    documentsList.innerHTML = `<p class=empty-state>No saved documents yet.</p>`;
-    return;
-  }
+    if (documents.length === 0) {
+        documentsList.innerHTML = `<p class="empty-state">No saved documents yet.</p>`;
+        return;
+    }
 
-  documentsList.innerHTML = ""
+    documentsList.innerHTML = "";
 
-  documents.forEach((savedDocument) => {
-    const documentRow = document.createElement("div");
-    documentRow.className = "document-row";
+    documents.forEach((savedDocument) => {
+      const documentRow = document.createElement("div");
+      documentRow.className = "document-row";
 
-    documentRow.innerHTML = `
-    <span>${savedDocument.filename}</span>
-    <span>${savedDocument.content_type}</span>
-    <span>${savedDocument.created_at}</span>
-    `;
+      documentRow.innerHTML = `
+      <span>${savedDocument.filename}</span>
+      <span>${formatContentType(savedDocument.content_type)}</span>
+      <span>${formatSavedDate(savedDocument.created_at)}</span>
+      `;
 
-    documentsList.appendChild(documentRow);
-  })
-}
+      documentsList.appendChild(documentRow);
+    });
+    }
 
-loadDocuments()
+loadDocuments();

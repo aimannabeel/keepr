@@ -1,4 +1,5 @@
 import sqlite3
+from datetime import datetime, timezone
 
 DATABASE_PATH = "keepr.db"
 
@@ -27,10 +28,11 @@ def create_tables():
 def save_document(filename, content_type, size):
     connection = get_connection()
     cursor = connection.cursor()
+    created_at = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
 
     cursor.execute("""
-        INSERT INTO documents(filename, content_type, size) VALUES (?, ?, ?)
-        """, (filename, content_type, size))
+        INSERT INTO documents(filename, content_type, size, created_at) VALUES (?, ?, ?, ?)
+        """, (filename, content_type, size, created_at))
     connection.commit()
     connection.close()
 

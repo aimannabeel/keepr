@@ -19,7 +19,6 @@ async def preview_document(document: UploadFile = File(...)):
         "filename": document.filename,
         "content_type": document.content_type,
         "size": len(file_bytes)
-
     }
 
 @app.post("/api/documents")
@@ -36,4 +35,4 @@ def create_document(document: dict):
 def list_documents():
     return get_document_rows()
 
-app.mount("/", StaticFiles(directory="static", html=True), name = "static")
+app.mount("/", StaticFiles(directory="static", html=True), name="static")
