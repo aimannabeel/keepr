@@ -18,21 +18,22 @@ def create_tables():
             filename TEXT NOT NULL,
             content_type TEXT NOT NULL,
             size INTEGER NOT NULL,
-            created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+            created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            stored_filename TEXT
         )
     """)
 
     connection.commit()
     connection.close()
 
-def save_document(filename, content_type, size):
+def save_document_metadata(filename, content_type, size, stored_filename):
     connection = get_connection()
     cursor = connection.cursor()
     created_at = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
 
     cursor.execute("""
-        INSERT INTO documents(filename, content_type, size, created_at) VALUES (?, ?, ?, ?)
-        """, (filename, content_type, size, created_at))
+        INSERT INTO documents(filename, content_type, size, created_at, stored_filename) VALUES (?, ?, ?, ?, ?)
+        """, (filename, content_type, size, created_at, stored_filename))
     connection.commit()
     connection.close()
 

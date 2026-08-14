@@ -1,6 +1,7 @@
 from fastapi import FastAPI, UploadFile, File
 from fastapi.staticfiles import StaticFiles
-from app.database import create_tables, save_document, get_document_rows
+from app.database import create_tables, save_document_metadata, get_document_rows
+from app.storage import save_uploaded_file
 
 app = FastAPI()
 create_tables()
@@ -22,14 +23,18 @@ async def preview_document(document: UploadFile = File(...)):
     }
 
 @app.post("/api/documents")
-def create_document(document: dict):
-    save_document(
-        document["filename"],
-        document["content_type"],
-        document["size"],
-    )
+async def create_document(document: UploadFile = File(...)):
+    stored_filename, file_size = await save_uploaded_file(document)
 
-    return {"message": "Document saved"}
+    save_document_metadata(document.filename, document.content_type, file_size, stored_filename,)
+
+    return{
+        "message": "Document saved",
+        "filename": document.filename,
+        "content_type": document.content_type,
+        "size": file_size,
+    }
+
 
 @app.get("/api/documents")
 def list_documents():

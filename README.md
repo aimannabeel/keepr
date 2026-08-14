@@ -22,6 +22,9 @@ The long-term idea is that Keepr can understand documents with OCR and AI, but t
 - Displays backend-confirmed content type
 - Displays backend-confirmed file size
 - Uses SQLite for local document metadata
+- Saves uploaded sample files into a local `vault-data/documents` folder
+- Generates internal stored filenames instead of using original filenames for storage
+- Links saved metadata to the internally stored file name
 - Saves document metadata only after the user clicks `Save Document`
 - Displays the five most recent saved document records
 - Formats saved dates into friendly labels such as `Today`, `Yesterday`, or a short date
@@ -32,7 +35,7 @@ The long-term idea is that Keepr can understand documents with OCR and AI, but t
 
 ## Current Limitations
 
-- Files are previewed and metadata is stored, but the actual files are not stored yet
+- Files can now be stored locally, but they are not encrypted yet
 - The database currently stores only basic file metadata
 - No document owners or people system yet
 - No OCR yet
@@ -57,6 +60,8 @@ The long-term idea is that Keepr can understand documents with OCR and AI, but t
 app/
   main.py          # FastAPI app, API routes, upload preview route, and static file serving
   database.py      # SQLite connection, table creation, and document metadata helpers
+  storage.py       # Local file storage helpers for generated internal filenames
+
 
 static/
   index.html      # Frontend page
@@ -128,13 +133,13 @@ http://127.0.0.1:8000/api/health
 
 ### Phase 3: Local File Storage
 
-- [ ] Save uploaded files locally
-- [ ] Generate internal document IDs
-- [ ] Separate stored file names from user-facing document names
-- [ ] Link stored files to database records
+- [x] Save uploaded files locally
+- [x] Generate internal document IDs
+- [x] Separate stored file names from user-facing document names
+- [x] Link stored files to database records
 - [ ] Allow viewing or downloading stored files
 
-### Phase 4: Organisation, Metadata Search and Browsing
+### Phase 4: Organisation, Search and Browsing
 
 - [ ] Add people/document owners
 - [ ] Add document type field

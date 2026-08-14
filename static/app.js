@@ -4,6 +4,7 @@ const saveDocumentButton = document.querySelector("#saveDocumentButton");
 const documentsList = document.querySelector("#documentsList");
 
 let previewedDocument = null;
+let selectedDocumentFile = null;
 
 function formatSavedDate(createdAt){
     const normalisedCreatedAt = createdAt.includes("T")
@@ -63,13 +64,19 @@ function formatContentType(contentType) {
 
 documentInput.addEventListener("change", async() => {
     const selectedFile = documentInput.files[0];
+    
 
     if (!selectedFile) {
         fileDetails.textContent = "No file selected yet.";
         previewedDocument = null;
+        selectedDocumentFile = null;
+
         saveDocumentButton.disabled = true;
         return;
     }
+
+    selectedDocumentFile = selectedFile;
+
 
     const formData = new FormData();
     formData.append("document", selectedFile);
@@ -81,27 +88,31 @@ documentInput.addEventListener("change", async() => {
 
     const data = await response.json();
 
-    fileDetails.textContent = `${data.filename} - ${data.content_type} - ${data.size} bytes`;
+    fileDetails.textContent = `${data.filename} - ${formatContentType(data.content_type)} - ${data.size} bytes`;
 
     saveDocumentButton.disabled = false;
     previewedDocument = data;
 });
 
 saveDocumentButton.addEventListener("click", async () =>{
-    if (!previewedDocument) {
+    if (!selectedDocumentFile) {
         return;
     }
 
+    const formData = new FormData();
+    formData.append("document", selectedDocumentFile);
+
     const response = await fetch("/api/documents", {
         method: "POST",
-        headers: {
-        "Content-Type": "application/json",
-        },
-        body: JSON.stringify(previewedDocument),
+        body: formData,
     });
+
+    const data = await response.json();
+
     fileDetails.textContent = "File saved successfully!";
     saveDocumentButton.disabled = true;
     previewedDocument = null;
+    selectedDocumentFile = null;
     await loadDocuments();
     });
 
