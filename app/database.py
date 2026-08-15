@@ -38,7 +38,7 @@ def save_document_metadata(filename, content_type, size, stored_filename):
     connection.close()
 
 
-def get_document_rows():
+def get_recent_document_rows():
     connection = get_connection()
     cursor = connection.cursor()
 
@@ -63,5 +63,55 @@ def get_document_rows():
             "created_at": row[4],
         })
 
+
     return documents
-    
+
+def get_all_document_rows():
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute(
+        """SELECT id, filename, content_type, size, created_at
+        FROM documents
+        ORDER BY created_at DESC"""
+    )
+
+    rows = cursor.fetchall()
+    connection.close()
+
+    documents = []
+
+    for row in rows:
+        documents.append({
+            "id": row[0],
+            "filename": row[1],
+            "content_type": row[2],
+            "size": row[3],
+            "created_at": row[4],            
+        })    
+    return documents
+
+def get_document_by_id(doc_id):
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute(
+        """SELECT id, filename, content_type, size, created_at, stored_filename
+        FROM documents
+        WHERE id=?""", (doc_id,)
+    )
+
+    row = cursor.fetchone()
+    connection.close()
+
+    if row is None: 
+        return None
+
+    return {
+        "id": row[0],
+        "filename": row[1],
+        "content_type": row[2],
+        "size": row[3],
+        "created_at": row[4],
+        "stored_filename": row[5],
+    }

@@ -2,6 +2,9 @@ const documentInput = document.querySelector("#documentInput");
 const fileDetails = document.querySelector("#fileDetails");
 const saveDocumentButton = document.querySelector("#saveDocumentButton");
 const documentsList = document.querySelector("#documentsList");
+const appLayout = document.querySelector("#appLayout");
+const viewDocumentsButton = document.querySelector("#viewDocumentsButton");
+const allDocumentsList = document.querySelector("#allDocumentsList");
 
 let previewedDocument = null;
 let selectedDocumentFile = null;
@@ -114,10 +117,11 @@ saveDocumentButton.addEventListener("click", async () =>{
     previewedDocument = null;
     selectedDocumentFile = null;
     await loadDocuments();
+    await loadAllDocuments();
     });
 
 async function loadDocuments() {
-    const response = await fetch("/api/documents");
+    const response = await fetch("/api/documents/recent");
     const documents = await response.json();
 
     if (documents.length === 0) {
@@ -141,4 +145,59 @@ async function loadDocuments() {
     });
     }
 
+viewDocumentsButton.addEventListener("click", () => {
+    console.log("View documents button clicked");
+    
+    appLayout.classList.toggle("documents-open");
+
+    if (appLayout.classList.contains("documents-open")) {
+        viewDocumentsButton.textContent = "Close viewer";
+    }
+    else {
+        viewDocumentsButton.textContent = "View documents";
+    }
+});
+
+async function loadAllDocuments() {
+    const response = await fetch("/api/documents");
+    const documents = await response.json();
+
+    if (documents.length === 0) {
+        allDocumentsList.innerHTML = `<p class="empty-state">No saved documents yet.</p>`;
+        return;
+    }
+
+    allDocumentsList.innerHTML = "";
+    
+    documents.forEach((savedDocument) => {
+        const documentRow = document.createElement("div");
+        documentRow.className = "document-row";
+
+        documentRow.innerHTML = `
+        <span>${savedDocument.filename}</span>
+        <span>${formatContentType(savedDocument.content_type)}</span>
+        <span class="document-actions">
+        <button type="button" class="view-document-button" data-document-id="${savedDocument.id}">View</button>
+        <button type="button" class="download-document-button" data-document-id="${savedDocument.id}">Download</button>
+        </span>
+        `;
+
+        const viewButton = documentRow.querySelector(".view-document-button");
+        const downloadButton = documentRow.querySelector(".download-document-button");
+
+        viewButton.addEventListener("click", () => {
+            const documentId = viewButton.dataset.documentId;
+            window.open(`/api/documents/${documentId}/file`, "_blank");
+        });
+        downloadButton.addEventListener("click", () =>{
+            const documentId = downloadButton.dataset.documentId;
+            window.location.href = `/api/documents/${documentId}/download`;
+        });
+
+        allDocumentsList.appendChild(documentRow);
+    });
+    
+}
+
 loadDocuments();
+loadAllDocuments();

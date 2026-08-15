@@ -1,41 +1,70 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="/styles.css">
-  <title>Keepr</title>
-</head>
-<body>
-  <main class="page-shell">
-    <section class="hero">
-      <p class="eyebrow">LOCAL DOCUMENT VAULT</p>
-      <h1>Keepr</h1>
-      <p class="intro">A private place to store, organise, and find important documents.</p>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/styles.css" />
+    <title>Keepr</title>
+  </head>
+  <body>
+    <main class="app-layout" id="appLayout">
+      <section class="home-panel">
+        <div class="page-shell">
+          <section class="hero">
+            <p class="eyebrow">LOCAL DOCUMENT VAULT</p>
+            <h1>Keepr</h1>
+            <p class="intro">
+              A private place to store, organise, and find important documents.
+            </p>
 
+            <div class="file-checker">
+              <label class="file-label" for="documentInput"
+                >Choose a sample document</label
+              >
+              <input id="documentInput" type="file" accept=".pdf,image/*" />
+              <button id="saveDocumentButton" type="button" disabled>
+                Save Document
+              </button>
+              <button id="viewDocumentsButton" type="button">
+                View documents
+              </button>
 
-      <div class="file-checker">
-        <label class="file-label" for="documentInput">Choose a sample document</label>
-        <input id="documentInput" type="file" accept=".pdf,image/*">
-        <button id="saveDocumentButton" type="button" disabled>Save Document</button>
+              <p id="fileDetails">No file selected yet</p>
+            </div>
 
-        <p id="fileDetails">No file selected yet</p>
-      </div>
-        
-      <section class="saved-documents">
+            <section class="saved-documents">
+              <div class="documents-header">
+                <span>Document</span>
+                <span>Type</span>
+                <span>Saved At</span>
+              </div>
+
+              <div id="documentsList" class="documents-list">
+                <p class="empty-state">No saved documents yet.</p>
+              </div>
+            </section>
+          </section>
+        </div>
+      </section>
+
+      <section id="documentPanel" class="documents-panel">
+        <div class="documents-panel-header">
+          <h2>Documents</h2>
+          <p>View or download files saved in Keepr.</p>
+        </div>
+
         <div class="documents-header">
           <span>Document</span>
           <span>Type</span>
-          <span>Saved At</span>
+          <span>Action</span>
         </div>
 
-        <div id="documentsList" class="documents-list">
-          <p class="empty-state">No saved documents yet.</p>
+        <div id="allDocumentsList" class="documents-list">
+          <p class="empty-state">No documents saved yet.</p>
         </div>
-        </section>
-    </section>
-  </main>
+      </section>
+    </main>
 
-  <script src="/app.js"></script>
-</body>
+    <script src="/app.js"></script>
+  </body>
 </html>

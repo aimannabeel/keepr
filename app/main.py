@@ -1,7 +1,9 @@
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
-from app.database import create_tables, save_document_metadata, get_document_rows
-from app.storage import save_uploaded_file
+from app.database import create_tables, save_document_metadata, get_recent_document_rows, get_all_document_rows, get_document_by_id
+from app.storage import save_uploaded_file, STORAGE_DIR
+
 
 app = FastAPI()
 create_tables()
@@ -35,9 +37,48 @@ async def create_document(document: UploadFile = File(...)):
         "size": file_size,
     }
 
-
 @app.get("/api/documents")
+def list_all_documents():
+    return get_all_document_rows()
+
+
+@app.get("/api/documents/recent")
 def list_documents():
-    return get_document_rows()
+    return get_recent_document_rows()
+
+@app.get("/api/documents/{document_id}/file")
+def get_document_file(document_id: int):
+    document = get_document_by_id(document_id)
+
+    if document is None:
+        raise HTTPException(status_code=404, detail="Document not found")
+
+    file_path = STORAGE_DIR / document["stored_filename"]
+
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail="Stored file not found")
+
+    return FileResponse(
+        path=file_path,
+        media_type=document["content_type"],
+    )
+
+@app.get("/api/documents/{document_id}/download")
+def download_document_file(document_id: int):
+    document = get_document_by_id(document_id)
+    
+    if document is None:
+        raise HTTPException(status_code=404, detail="Document not found")
+    
+    file_path = STORAGE_DIR / document["stored_filename"]
+    
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail="Stored file not found")
+
+    return FileResponse(
+        path=file_path,
+        media_type=document["content_type"],
+        filename=document["filename"],
+    )
 
 app.mount("/", StaticFiles(directory="static", html=True), name="static")
