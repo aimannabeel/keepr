@@ -19,21 +19,25 @@ def create_tables():
             content_type TEXT NOT NULL,
             size INTEGER NOT NULL,
             created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-            stored_filename TEXT
+            stored_filename TEXT,
+            display_name TEXT,
+            owner_name TEXT,
+            document_type TEXT,
+            tags TEXT
         )
     """)
 
     connection.commit()
     connection.close()
 
-def save_document_metadata(filename, content_type, size, stored_filename):
+def save_document_metadata(filename, content_type, size, stored_filename, display_name, owner_name, document_type, tags):
     connection = get_connection()
     cursor = connection.cursor()
     created_at = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
 
     cursor.execute("""
-        INSERT INTO documents(filename, content_type, size, created_at, stored_filename) VALUES (?, ?, ?, ?, ?)
-        """, (filename, content_type, size, created_at, stored_filename))
+        INSERT INTO documents(filename, content_type, size, created_at, stored_filename, display_name, owner_name, document_type, tags) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (filename, content_type, size, created_at, stored_filename, display_name, owner_name, document_type, tags))
     connection.commit()
     connection.close()
 
@@ -71,7 +75,7 @@ def get_all_document_rows():
     cursor = connection.cursor()
 
     cursor.execute(
-        """SELECT id, filename, content_type, size, created_at
+        """SELECT id, filename, content_type, size, created_at, display_name, owner_name, document_type, tags
         FROM documents
         ORDER BY created_at DESC"""
     )
@@ -87,7 +91,11 @@ def get_all_document_rows():
             "filename": row[1],
             "content_type": row[2],
             "size": row[3],
-            "created_at": row[4],            
+            "created_at": row[4],
+            "display_name": row[5],
+            "owner_name": row[6],
+            "document_type": row[7],
+            "tags": row[8],            
         })    
     return documents
 
@@ -96,7 +104,7 @@ def get_document_by_id(doc_id):
     cursor = connection.cursor()
 
     cursor.execute(
-        """SELECT id, filename, content_type, size, created_at, stored_filename
+        """SELECT id, filename, content_type, size, created_at, stored_filename, display_name, owner_name, document_type, tags
         FROM documents
         WHERE id=?""", (doc_id,)
     )
@@ -114,4 +122,8 @@ def get_document_by_id(doc_id):
         "size": row[3],
         "created_at": row[4],
         "stored_filename": row[5],
+        "display_name": row[6],
+        "owner_name": row[7],
+        "document_type": row[8],
+        "tags": row[9],
     }

@@ -22,14 +22,9 @@
                 >Choose a sample document</label
               >
               <input id="documentInput" type="file" accept=".pdf,image/*" />
-              <button id="saveDocumentButton" type="button" disabled>
-                Save Document
-              </button>
               <button id="viewDocumentsButton" type="button">
                 View documents
               </button>
-
-              <p id="fileDetails">No file selected yet</p>
             </div>
 
             <section class="saved-documents">
@@ -52,6 +47,10 @@
           <h2>Documents</h2>
           <p>View or download files saved in Keepr.</p>
         </div>
+        
+        <div class="documents-search">
+          <input id="documentsSearchInput" type="text" placeholder="Search by name, owner, type or tag..."/>
+        </div>
 
         <div class="documents-header">
           <span>Document</span>
@@ -65,6 +64,42 @@
       </section>
     </main>
 
+    <div id="documentModal" class="modal-overlay" hidden>
+      <div class="document-modal">
+        <p class="modal-eyebrow">
+          Save document
+        </p>
+        <h2>Add document details</h2>
+        <p id="modalFileName" class="modal-file-name">Selected file</p>
+
+        <div class="modal-fields">
+          <label>
+            Vault name (optional)
+            <input id="displayNameInput" type="text" placeholder="UOB fees 2026"/>
+          </label>
+
+          <label>
+            Owner (optional)
+            <input id="ownerNameInput" type="text" placeholder="Enter owner name..."/>
+          </label>
+
+          <label>
+            Document type (optional)
+            <input id="documentTypeInput" type="text" placeholder="Passport, License, Aadhaar"/>
+          </label>
+
+          <label>
+            Tags / nicknames (optional)
+            <input id="tagsInput" type="text" placeholder="pp, F-stat, old passport"/>
+          </label>
+        </div>
+
+        <div class="modal-actions">
+          <button id="cancelModalButton" type="button">Cancel</button>
+          <button id="modalSaveButton" type="button">Save document</button>
+        </div>
+      </div>
+    </div>
     <script src="/app.js"></script>
   </body>
 </html>

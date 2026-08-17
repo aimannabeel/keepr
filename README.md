@@ -1,7 +1,7 @@
 # Keepr
 Keepr is a local-first document vault that I am building to help people store, organize, and find important personal or family documents securely.
 
-I am building this project in phases while learning full-stack development, frontend/backend communication, databases, OCR, search, AI/ML, encryption, Git, and GitHub. The first goal was to build a small local app that can choose a non-sensitive sample document, send it to a Python backend, and display backend-confirmed file details.
+I am building this project in phases while learning full-stack development, frontend/backend communication, databases, local file storage, search, OCR, AI/ML, encryption, Git, and GitHub. Keepr now has a working local MVP for non-sensitive sample documents: users can upload files, add optional metadata and aliases, search saved documents using personal keywords, and view or download stored files.
 
 ## Why I am building this
 
@@ -27,19 +27,32 @@ The long-term idea is that Keepr can understand documents with OCR and AI, but t
 - Links saved metadata to the internally stored file name
 - Saves document metadata only after the user clicks `Save Document`
 - Displays the five most recent saved document records
+- Provides a metadata modal for adding a vault display name, owner, document type, and tags/aliases
+- Supports user-defined aliases such as `pp` for passport
+- Displays saved documents in a document panel
+- Allows viewing stored files in the browser
+- Allows downloading stored files
+- Supports keyword search across vault name, original filename, owner, document type, and tags
+- Supports multi-word searches such as `dad pan`, `aiman passport`, or `passport aiman`
 - Formats saved dates into friendly labels such as `Today`, `Yesterday`, or a short date
 - Formats raw content types into friendlier labels such as `PNG image` and `PDF`
 - Uses a local Python virtual environment
 - Stores dependencies in `requirements.txt`
 - Keeps `.venv`, `.env`, database files, and future vault data out of Git
 
+## Current MVP Status
+
+Keepr now has a working local MVP for non-sensitive sample documents. It supports uploading files, saving them locally, adding human-friendly metadata and aliases, searching documents using personal keywords, and viewing or downloading saved files.
+
+This MVP is still local-development only and should not be used for real sensitive documents until encryption, stronger privacy protections, and a clearer security model are added.
+
 ## Current Limitations
 
 - Files can now be stored locally, but they are not encrypted yet
-- The database currently stores only basic file metadata
-- No document owners or people system yet
+- Search currently depends on filenames and user-added metadata/tags, not OCR content
 - No OCR yet
-- No search yet
+- No current/archive status yet
+- No expiry date tracking yet
 - No encryption yet
 - Keepr should not be used with real personal documents yet
 
@@ -137,19 +150,22 @@ http://127.0.0.1:8000/api/health
 - [x] Generate internal document IDs
 - [x] Separate stored file names from user-facing document names
 - [x] Link stored files to database records
-- [ ] Allow viewing or downloading stored files
+- [x] Allow viewing or downloading stored files
 
 ### Phase 4: Organisation, Search and Browsing
 
-- [ ] Add people/document owners
-- [ ] Add document type field
+- [x] Add vault display name for documents
+- [x] Add people/document owners
+- [x] Add document type field
+- [x] Add tags / aliases such as `pp` for passport
+- [x] Add basic keyword search across name, owner, type, filename, and tags
+- [x] Support multi-word searches like `dad pan`, `aiman passport`, or `passport aiman`
 - [ ] Add current/archive status
 - [ ] Add expiry date field
-- [ ] Add basic keyword search
 - [ ] Add people-based browsing
 - [ ] Add document cards
-- [ ] Add aliases such as `pp` for passport
-- [ ] Support searches like `dad pan` or `passport`
+- [ ] Add document actions menu for rename, edit details, archive, and delete
+- [ ] Delete both database metadata and locally stored file safely
 
 ### Phase 5: OCR and Structured Metadata
 
@@ -181,6 +197,7 @@ http://127.0.0.1:8000/api/health
 - [ ] Investigate local embeddings or local models
 - [ ] Explore training or fine-tuning a small model if it makes technical sense
 - [ ] Keep AI features understandable and privacy-aware
+- [ ] Later, Keepr should be able to suggest document names, document types, and searchable aliases automatically, while still allowing the user to edit them.
 
 ## Privacy Note
 

@@ -1,13 +1,22 @@
 const documentInput = document.querySelector("#documentInput");
-const fileDetails = document.querySelector("#fileDetails");
-const saveDocumentButton = document.querySelector("#saveDocumentButton");
 const documentsList = document.querySelector("#documentsList");
 const appLayout = document.querySelector("#appLayout");
 const viewDocumentsButton = document.querySelector("#viewDocumentsButton");
 const allDocumentsList = document.querySelector("#allDocumentsList");
+const documentModal = document.querySelector("#documentModal");
+const modalFileName = document.querySelector("#modalFileName");
+const cancelModalButton = document.querySelector("#cancelModalButton");
+const modalSaveButton = document.querySelector("#modalSaveButton");
+
+const displayNameInput = document.querySelector("#displayNameInput");
+const ownerNameInput = document.querySelector("#ownerNameInput");
+const documentTypeInput = document.querySelector("#documentTypeInput");
+const tagsInput = document.querySelector("#tagsInput");
+const documentsSearchInput = document.querySelector("#documentsSearchInput");
 
 let previewedDocument = null;
 let selectedDocumentFile = null;
+let allDocuments = [];
 
 function formatSavedDate(createdAt){
     const normalisedCreatedAt = createdAt.includes("T")
@@ -70,11 +79,8 @@ documentInput.addEventListener("change", async() => {
     
 
     if (!selectedFile) {
-        fileDetails.textContent = "No file selected yet.";
         previewedDocument = null;
         selectedDocumentFile = null;
-
-        saveDocumentButton.disabled = true;
         return;
     }
 
@@ -91,34 +97,10 @@ documentInput.addEventListener("change", async() => {
 
     const data = await response.json();
 
-    fileDetails.textContent = `${data.filename} - ${formatContentType(data.content_type)} - ${data.size} bytes`;
-
-    saveDocumentButton.disabled = false;
     previewedDocument = data;
+
+    openDocumentModal(data.filename);
 });
-
-saveDocumentButton.addEventListener("click", async () =>{
-    if (!selectedDocumentFile) {
-        return;
-    }
-
-    const formData = new FormData();
-    formData.append("document", selectedDocumentFile);
-
-    const response = await fetch("/api/documents", {
-        method: "POST",
-        body: formData,
-    });
-
-    const data = await response.json();
-
-    fileDetails.textContent = "File saved successfully!";
-    saveDocumentButton.disabled = true;
-    previewedDocument = null;
-    selectedDocumentFile = null;
-    await loadDocuments();
-    await loadAllDocuments();
-    });
 
 async function loadDocuments() {
     const response = await fetch("/api/documents/recent");
@@ -145,9 +127,7 @@ async function loadDocuments() {
     });
     }
 
-viewDocumentsButton.addEventListener("click", () => {
-    console.log("View documents button clicked");
-    
+viewDocumentsButton.addEventListener("click", () => {    
     appLayout.classList.toggle("documents-open");
 
     if (appLayout.classList.contains("documents-open")) {
@@ -158,12 +138,9 @@ viewDocumentsButton.addEventListener("click", () => {
     }
 });
 
-async function loadAllDocuments() {
-    const response = await fetch("/api/documents");
-    const documents = await response.json();
-
+function renderAllDocuments(documents, emptyMessage = "No saved documents yet.") {
     if (documents.length === 0) {
-        allDocumentsList.innerHTML = `<p class="empty-state">No saved documents yet.</p>`;
+        allDocumentsList.innerHTML = `<p class="empty-state">${emptyMessage}</p>`;
         return;
     }
 
@@ -174,7 +151,7 @@ async function loadAllDocuments() {
         documentRow.className = "document-row";
 
         documentRow.innerHTML = `
-        <span>${savedDocument.filename}</span>
+        <span>${getDocumentTitle(savedDocument)}</span>
         <span>${formatContentType(savedDocument.content_type)}</span>
         <span class="document-actions">
         <button type="button" class="view-document-button" data-document-id="${savedDocument.id}">View</button>
@@ -189,6 +166,7 @@ async function loadAllDocuments() {
             const documentId = viewButton.dataset.documentId;
             window.open(`/api/documents/${documentId}/file`, "_blank");
         });
+
         downloadButton.addEventListener("click", () =>{
             const documentId = downloadButton.dataset.documentId;
             window.location.href = `/api/documents/${documentId}/download`;
@@ -196,8 +174,97 @@ async function loadAllDocuments() {
 
         allDocumentsList.appendChild(documentRow);
     });
+}
+
+async function loadAllDocuments() {
+    const response = await fetch("/api/documents");
+    const documents = await response.json();
+
+    allDocuments = documents;
+    renderAllDocuments(allDocuments)
     
 }
+
+cancelModalButton.addEventListener("click", () => {
+    closeDocumentModal();
+
+    documentInput.value = "";
+    selectedDocumentFile = null;
+    previewedDocument = null;
+});
+
+modalSaveButton.addEventListener("click", async () =>{
+     if (!selectedDocumentFile) {
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("document", selectedDocumentFile);
+    formData.append("display_name", displayNameInput.value);
+    formData.append("owner_name", ownerNameInput.value);
+    formData.append("document_type", documentTypeInput.value);
+    formData.append("tags", tagsInput.value);
+
+    const response = await fetch("/api/documents", {
+        method: "POST",
+        body: formData,
+    });
+
+    const data = await response.json();
+
+    closeDocumentModal();
+
+    documentInput.value = "";
+    selectedDocumentFile = null;
+    previewedDocument = null;
+
+    displayNameInput.value = "";
+    ownerNameInput.value = "";
+    documentTypeInput.value = "";
+    tagsInput.value = "";
+
+    await loadDocuments();
+    await loadAllDocuments();
+});
+
+function openDocumentModal(filename){
+    modalFileName.textContent = filename;
+    documentModal.hidden = false;
+}
+
+function closeDocumentModal(){
+    documentModal.hidden = true;
+}
+
+function getDocumentTitle(savedDocument) {
+    return savedDocument.display_name || savedDocument.filename;
+}
+
+documentsSearchInput.addEventListener("input", () => {
+    const query = documentsSearchInput.value.toLowerCase().trim();
+
+    if (query === "") {
+        renderAllDocuments(allDocuments);
+        return;
+    }
+
+    const searchWords = query.split(" ");
+
+    const matchingDocuments = allDocuments.filter((savedDocument) => {
+        const searchableText = `
+        ${savedDocument.display_name || ""}
+        ${savedDocument.filename || ""}
+        ${savedDocument.owner_name || ""}
+        ${savedDocument.document_type || ""}
+        ${savedDocument.tags || ""}
+        `.toLowerCase();
+
+        return searchWords.every((word) => searchableText.includes(word));
+    });
+
+
+    renderAllDocuments(matchingDocuments, "No documents found.");    
+});
 
 loadDocuments();
 loadAllDocuments();

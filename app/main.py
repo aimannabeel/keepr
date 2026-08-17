@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi import FastAPI, UploadFile, File, HTTPException, Form
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from app.database import create_tables, save_document_metadata, get_recent_document_rows, get_all_document_rows, get_document_by_id
@@ -25,10 +25,16 @@ async def preview_document(document: UploadFile = File(...)):
     }
 
 @app.post("/api/documents")
-async def create_document(document: UploadFile = File(...)):
+async def create_document(
+    document: UploadFile = File(...),
+    display_name: str = Form(""),
+    owner_name: str = Form(""),
+    document_type: str = Form(""),
+    tags: str = Form(""),
+    ):
     stored_filename, file_size = await save_uploaded_file(document)
 
-    save_document_metadata(document.filename, document.content_type, file_size, stored_filename,)
+    save_document_metadata(document.filename, document.content_type, file_size, stored_filename, display_name, owner_name, document_type, tags,)
 
     return{
         "message": "Document saved",
