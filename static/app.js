@@ -14,9 +14,16 @@ const documentTypeInput = document.querySelector("#documentTypeInput");
 const tagsInput = document.querySelector("#tagsInput");
 const documentsSearchInput = document.querySelector("#documentsSearchInput");
 
+const documentActionsMenu = document.querySelector("#documentActionsMenu");
+const editDocumentButton = document.querySelector("#editDocumentButton");
+const deleteDocumentButton = document.querySelector("#deleteDocumentButton");
+
 let previewedDocument = null;
 let selectedDocumentFile = null;
 let allDocuments = [];
+let selectedActionDocumentId = null;
+let modalMode = "create";
+let editingDocumentId = null;
 
 function formatSavedDate(createdAt){
     const normalisedCreatedAt = createdAt.includes("T")
@@ -138,6 +145,11 @@ viewDocumentsButton.addEventListener("click", () => {
     }
 });
 
+document.addEventListener("click", () => {
+    documentActionsMenu.hidden = true;
+    selectedActionDocumentId = null;
+});
+
 function renderAllDocuments(documents, emptyMessage = "No saved documents yet.") {
     if (documents.length === 0) {
         allDocumentsList.innerHTML = `<p class="empty-state">${emptyMessage}</p>`;
@@ -156,11 +168,14 @@ function renderAllDocuments(documents, emptyMessage = "No saved documents yet.")
         <span class="document-actions">
         <button type="button" class="view-document-button" data-document-id="${savedDocument.id}">View</button>
         <button type="button" class="download-document-button" data-document-id="${savedDocument.id}">Download</button>
+        <button type="button" class="more-actions-button" data-document-id="${savedDocument.id}">⋮</button>
         </span>
         `;
 
         const viewButton = documentRow.querySelector(".view-document-button");
         const downloadButton = documentRow.querySelector(".download-document-button");
+
+        const moreActionsButton = documentRow.querySelector(".more-actions-button");
 
         viewButton.addEventListener("click", () => {
             const documentId = viewButton.dataset.documentId;
@@ -172,6 +187,19 @@ function renderAllDocuments(documents, emptyMessage = "No saved documents yet.")
             window.location.href = `/api/documents/${documentId}/download`;
         });
 
+        moreActionsButton.addEventListener("click", (event) => {
+            selectedActionDocumentId = moreActionsButton.dataset.documentId;
+
+            const buttonPosition = moreActionsButton.getBoundingClientRect();
+
+            documentActionsMenu.style.top = `${buttonPosition.bottom + 4}px`;
+            documentActionsMenu.style.left = `${buttonPosition.right - 118}px`;
+
+            documentActionsMenu.hidden = false;
+
+            event.stopPropagation();
+        });
+
         allDocumentsList.appendChild(documentRow);
     });
 }
@@ -181,7 +209,7 @@ async function loadAllDocuments() {
     const documents = await response.json();
 
     allDocuments = documents;
-    renderAllDocuments(allDocuments)
+    renderAllDocuments(allDocuments);
     
 }
 
@@ -194,6 +222,38 @@ cancelModalButton.addEventListener("click", () => {
 });
 
 modalSaveButton.addEventListener("click", async () =>{
+    if (modalMode === "edit") {
+        const formData = new FormData();
+        formData.append("display_name", displayNameInput.value);
+        formData.append("owner_name", ownerNameInput.value);
+        formData.append("document_type", documentTypeInput.value);
+        formData.append("tags", tagsInput.value);
+
+        const response = await fetch(`/api/documents/${editingDocumentId}`, {
+            method: "PATCH",
+            body: formData,
+        });
+
+        const data = await response.json();
+
+        closeDocumentModal();
+
+        modalMode = "create";
+        editingDocumentId = null;
+        modalSaveButton.textContent = "Save document";
+
+        displayNameInput.value = "";
+        ownerNameInput.value = "";
+        documentTypeInput.value = "";
+        tagsInput.value = "";
+
+        await loadDocuments();
+        await loadAllDocuments();
+
+        return;
+    }
+
+
      if (!selectedDocumentFile) {
         return;
     }
@@ -264,6 +324,64 @@ documentsSearchInput.addEventListener("input", () => {
 
 
     renderAllDocuments(matchingDocuments, "No documents found.");    
+});
+
+editDocumentButton.addEventListener("click", () => {
+    const documentToEdit = allDocuments.find((savedDocument) => {
+        return String(savedDocument.id) === selectedActionDocumentId;
+    });
+        
+    if (!documentToEdit){
+        return;
+    }
+
+    modalMode = "edit";
+    editingDocumentId = documentToEdit.id;
+    modalFileName.textContent = getDocumentTitle(documentToEdit);
+
+    displayNameInput.value = documentToEdit.display_name || "";
+    ownerNameInput.value = documentToEdit.owner_name || "";
+    documentTypeInput.value = documentToEdit.document_type || "";
+    tagsInput.value = documentToEdit.tags || "";
+
+    modalSaveButton.textContent = "Save changes";
+
+    documentModal.hidden = false;
+    documentActionsMenu.hidden = true;
+
+
+});
+
+
+deleteDocumentButton.addEventListener("click", async (event) => {
+    event.stopPropagation();
+
+    if (!selectedActionDocumentId) {
+        return;
+    }
+
+    const documentId = selectedActionDocumentId;
+
+    const confirmed = confirm("Are you sure you want to delete this document?");
+
+    if (!confirmed) {
+        return;
+    }
+
+    const response = await fetch(`/api/documents/${documentId}`, {
+        method: "DELETE",
+    });
+
+    if (!response.ok) {
+        console.error("Delete failed");
+        return;
+    }
+
+    documentActionsMenu.hidden = true;
+    selectedActionDocumentId = null;
+
+    await loadDocuments();
+    await loadAllDocuments();
 });
 
 loadDocuments();

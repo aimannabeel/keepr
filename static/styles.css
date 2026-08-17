@@ -252,6 +252,30 @@ h1 {
     transform 0.2s ease;
 }
 
+.more-actions-button {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #5f6b62;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+}
+
+.more-actions-button:hover {
+  background: #f3f0e8;
+  color: #1f2923;
+}
+
+
+
 .view-document-button {
   border: 1px solid #1f2923;
   background: #1f2923;
@@ -451,4 +475,39 @@ h1 {
   outline: none;
   border-color: #5f7f68;
   box-shadow: 0 0 0 3px rgba(95, 127, 104, 0.14);
+}
+
+.document-actions-menu {
+  position: fixed;
+  width: 118px;
+  padding: 4px;
+  border: 1px solid #d8ddd6;
+  border-radius: 12px;
+  background: #fffdf8;
+  box-shadow: 0 12px 28px rgba(31, 41, 35, 0.12);
+  z-index: 20;
+}
+
+.document-actions-menu[hidden] {
+  display: none;
+}
+
+.document-actions-menu button {
+  width: 100%;
+  padding: 8px 9px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #1f2923;
+  font-size: 12px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.document-actions-menu button:hover {
+  background: #f3f0e8;
+}
+
+#deleteDocumentButton {
+  color: #b42318;
 }

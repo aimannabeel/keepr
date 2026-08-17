@@ -127,3 +127,30 @@ def get_document_by_id(doc_id):
         "document_type": row[8],
         "tags": row[9],
     }
+
+def update_document_metadata(document_id, display_name, owner_name, document_type, tags):
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        UPDATE documents
+        SET display_name = ?,
+            owner_name = ?,
+            document_type = ?,
+            tags = ?
+        WHERE id = ?
+    """, (display_name, owner_name, document_type, tags, document_id))
+
+    connection.commit()
+    connection.close()
+
+def delete_document_metadata_by_id(document_id):
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute(
+        """DELETE FROM documents WHERE id = ?""", (document_id,)
+    )
+
+    connection.commit()
+    connection.close()

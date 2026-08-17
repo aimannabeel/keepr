@@ -183,12 +183,16 @@ http://127.0.0.1:8000/api/health
 
 ### Phase 7: Privacy and Security
 
+- [ ] Add local vault export/import backup
+- [ ] Make backups include both `keepr.db` and `vault-data/documents`
+- [ ] Document that UUID-stored files alone are not enough to restore the vault
 - [ ] Design encrypted local vault storage
 - [ ] Add password-based unlocking
 - [ ] Encrypt stored documents
 - [ ] Protect sensitive metadata
 - [ ] Define what data is allowed to leave the device
 - [ ] Keep cloud AI optional and explicit
+- [ ] Investigate optional encrypted Google Drive/OneDrive backup only after encryption
 
 ### Future AI / ML Direction
 
