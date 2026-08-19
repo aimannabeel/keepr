@@ -1,0 +1,24 @@
+{
+  "name": "keepr",
+  "version": "1.0.0",
+  "description": "Keepr is a local-first document vault that I am building to help people store, organize, and find important personal or family documents securely.",
+  "main": "electron/main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aimannabeel/keepr.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/aimannabeel/keepr/issues"
+  },
+  "homepage": "https://github.com/aimannabeel/keepr#readme",
+  "devDependencies": {
+    "electron": "^43.4.1"
+  }
+}
