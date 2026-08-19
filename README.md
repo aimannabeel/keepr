@@ -160,12 +160,10 @@ http://127.0.0.1:8000/api/health
 - [x] Add tags / aliases such as `pp` for passport
 - [x] Add basic keyword search across name, owner, type, filename, and tags
 - [x] Support multi-word searches like `dad pan`, `aiman passport`, or `passport aiman`
-- [ ] Add current/archive status
-- [ ] Add expiry date field
-- [ ] Add people-based browsing
-- [ ] Add document cards
-- [ ] Add document actions menu for rename, edit details, archive, and delete
-- [ ] Delete both database metadata and locally stored file safely
+- [x] Add expiry date field
+- [x] Add people-based browsing
+- [x] Add document actions menu for rename, edit details, archive, and delete
+- [x] Delete both database metadata and locally stored file safely
 
 ### Phase 5: OCR and Structured Metadata
 
@@ -180,6 +178,7 @@ http://127.0.0.1:8000/api/health
 - [ ] Track expiry dates
 - [ ] Show documents expiring soon
 - [ ] Add simple reminder settings
+- [ ] Add document cards
 
 ### Phase 7: Privacy and Security
 

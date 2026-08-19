@@ -23,21 +23,22 @@ def create_tables():
             display_name TEXT,
             owner_name TEXT,
             document_type TEXT,
-            tags TEXT
+            tags TEXT,
+            expiry_date TEXT
         )
     """)
 
     connection.commit()
     connection.close()
 
-def save_document_metadata(filename, content_type, size, stored_filename, display_name, owner_name, document_type, tags):
+def save_document_metadata(filename, content_type, size, stored_filename, display_name, owner_name, document_type, tags, expiry_date):
     connection = get_connection()
     cursor = connection.cursor()
     created_at = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
 
     cursor.execute("""
-        INSERT INTO documents(filename, content_type, size, created_at, stored_filename, display_name, owner_name, document_type, tags) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """, (filename, content_type, size, created_at, stored_filename, display_name, owner_name, document_type, tags))
+        INSERT INTO documents(filename, content_type, size, created_at, stored_filename, display_name, owner_name, document_type, tags, expiry_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (filename, content_type, size, created_at, stored_filename, display_name, owner_name, document_type, tags, expiry_date))
     connection.commit()
     connection.close()
 
@@ -75,7 +76,7 @@ def get_all_document_rows():
     cursor = connection.cursor()
 
     cursor.execute(
-        """SELECT id, filename, content_type, size, created_at, display_name, owner_name, document_type, tags
+        """SELECT id, filename, content_type, size, created_at, display_name, owner_name, document_type, tags, expiry_date
         FROM documents
         ORDER BY created_at DESC"""
     )
@@ -95,7 +96,8 @@ def get_all_document_rows():
             "display_name": row[5],
             "owner_name": row[6],
             "document_type": row[7],
-            "tags": row[8],            
+            "tags": row[8],   
+            "expiry_date": row[9]         
         })    
     return documents
 
@@ -104,7 +106,7 @@ def get_document_by_id(doc_id):
     cursor = connection.cursor()
 
     cursor.execute(
-        """SELECT id, filename, content_type, size, created_at, stored_filename, display_name, owner_name, document_type, tags
+        """SELECT id, filename, content_type, size, created_at, stored_filename, display_name, owner_name, document_type, tags, expiry_date
         FROM documents
         WHERE id=?""", (doc_id,)
     )
@@ -126,9 +128,10 @@ def get_document_by_id(doc_id):
         "owner_name": row[7],
         "document_type": row[8],
         "tags": row[9],
+        "expiry_date": row[10]
     }
 
-def update_document_metadata(document_id, display_name, owner_name, document_type, tags):
+def update_document_metadata(document_id, display_name, owner_name, document_type, tags, expiry_date):
     connection = get_connection()
     cursor = connection.cursor()
 
@@ -137,9 +140,10 @@ def update_document_metadata(document_id, display_name, owner_name, document_typ
         SET display_name = ?,
             owner_name = ?,
             document_type = ?,
-            tags = ?
+            tags = ?,
+            expiry_date = ?
         WHERE id = ?
-    """, (display_name, owner_name, document_type, tags, document_id))
+    """, (display_name, owner_name, document_type, tags, expiry_date, document_id))
 
     connection.commit()
     connection.close()

@@ -22,8 +22,8 @@ body{
 }
 
 .documents-panel {
-  width: 620px;
-  min-width: 620px;
+  width: 760px;
+  min-width: 760px;
   margin: auto auto auto 0; 
   height: calc(100vh - 120px);
   padding: 28px;
@@ -318,6 +318,7 @@ h1 {
 
 .documents-panel .documents-header {
   border-radius: 14px 14px 0 0;
+  grid-template-columns: 2fr 1fr 1fr 1.4fr;
 }
 
 .documents-panel .documents-list {
@@ -325,6 +326,26 @@ h1 {
   border-top: 0;
   border-radius: 0 0 14px 14px;
   overflow: hidden;
+}
+
+.documents-panel .document-row {
+  grid-template-columns: 2fr 1fr 1fr 1.4fr;
+}
+
+.documents-panel .documents-header span:nth-child(1) {
+  text-align: left;
+}
+
+.documents-panel .documents-header span:nth-child(2) {
+  text-align: center;
+}
+
+.documents-panel .documents-header span:nth-child(3) {
+  text-align: center;
+}
+
+.documents-panel .documents-header span:nth-child(4) {
+  text-align: center;
 }
 
 .documents-panel {

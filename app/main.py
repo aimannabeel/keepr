@@ -36,10 +36,11 @@ async def create_document(
     owner_name: str = Form(""),
     document_type: str = Form(""),
     tags: str = Form(""),
+    expiry_date: str = Form("")
     ):
     stored_filename, file_size = await save_uploaded_file(document)
 
-    save_document_metadata(document.filename, document.content_type, file_size, stored_filename, display_name, owner_name, document_type, tags,)
+    save_document_metadata(document.filename, document.content_type, file_size, stored_filename, display_name, owner_name, document_type, tags, expiry_date,)
 
     return{
         "message": "Document saved",
@@ -99,6 +100,7 @@ def update_document(
     owner_name: str = Form(""),
     document_type: str = Form(""),
     tags: str = Form(""),
+    expiry_date: str = Form("")
     ):
 
     document = get_document_by_id(document_id)
@@ -112,6 +114,7 @@ def update_document(
         owner_name,
         document_type,
         tags,
+        expiry_date,
     )
 
     return {"message": "Document updated"}

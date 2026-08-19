@@ -13,10 +13,13 @@ const ownerNameInput = document.querySelector("#ownerNameInput");
 const documentTypeInput = document.querySelector("#documentTypeInput");
 const tagsInput = document.querySelector("#tagsInput");
 const documentsSearchInput = document.querySelector("#documentsSearchInput");
+const expiryInput = document.querySelector("#expiryInput");
 
 const documentActionsMenu = document.querySelector("#documentActionsMenu");
 const editDocumentButton = document.querySelector("#editDocumentButton");
 const deleteDocumentButton = document.querySelector("#deleteDocumentButton");
+
+
 
 let previewedDocument = null;
 let selectedDocumentFile = null;
@@ -24,6 +27,7 @@ let allDocuments = [];
 let selectedActionDocumentId = null;
 let modalMode = "create";
 let editingDocumentId = null;
+let deleteClickCount = 0;
 
 function formatSavedDate(createdAt){
     const normalisedCreatedAt = createdAt.includes("T")
@@ -148,6 +152,8 @@ viewDocumentsButton.addEventListener("click", () => {
 document.addEventListener("click", () => {
     documentActionsMenu.hidden = true;
     selectedActionDocumentId = null;
+    deleteDocumentButton.textContent = "Delete";
+    deleteClickCount = 0;
 });
 
 function renderAllDocuments(documents, emptyMessage = "No saved documents yet.") {
@@ -165,6 +171,7 @@ function renderAllDocuments(documents, emptyMessage = "No saved documents yet.")
         documentRow.innerHTML = `
         <span>${getDocumentTitle(savedDocument)}</span>
         <span>${formatContentType(savedDocument.content_type)}</span>
+        <span>${savedDocument.expiry_date || "-"}</span>
         <span class="document-actions">
         <button type="button" class="view-document-button" data-document-id="${savedDocument.id}">View</button>
         <button type="button" class="download-document-button" data-document-id="${savedDocument.id}">Download</button>
@@ -228,6 +235,7 @@ modalSaveButton.addEventListener("click", async () =>{
         formData.append("owner_name", ownerNameInput.value);
         formData.append("document_type", documentTypeInput.value);
         formData.append("tags", tagsInput.value);
+        formData.append("expiry_date", expiryInput.value)
 
         const response = await fetch(`/api/documents/${editingDocumentId}`, {
             method: "PATCH",
@@ -246,6 +254,7 @@ modalSaveButton.addEventListener("click", async () =>{
         ownerNameInput.value = "";
         documentTypeInput.value = "";
         tagsInput.value = "";
+        expiryInput.value = "";
 
         await loadDocuments();
         await loadAllDocuments();
@@ -264,6 +273,7 @@ modalSaveButton.addEventListener("click", async () =>{
     formData.append("owner_name", ownerNameInput.value);
     formData.append("document_type", documentTypeInput.value);
     formData.append("tags", tagsInput.value);
+    formData.append("expiry_date", expiryInput.value);
 
     const response = await fetch("/api/documents", {
         method: "POST",
@@ -282,6 +292,7 @@ modalSaveButton.addEventListener("click", async () =>{
     ownerNameInput.value = "";
     documentTypeInput.value = "";
     tagsInput.value = "";
+    expiryInput.value = "";
 
     await loadDocuments();
     await loadAllDocuments();
@@ -317,6 +328,7 @@ documentsSearchInput.addEventListener("input", () => {
         ${savedDocument.owner_name || ""}
         ${savedDocument.document_type || ""}
         ${savedDocument.tags || ""}
+        ${savedDocument.expiry_date || ""}
         `.toLowerCase();
 
         return searchWords.every((word) => searchableText.includes(word));
@@ -343,6 +355,7 @@ editDocumentButton.addEventListener("click", () => {
     ownerNameInput.value = documentToEdit.owner_name || "";
     documentTypeInput.value = documentToEdit.document_type || "";
     tagsInput.value = documentToEdit.tags || "";
+    expiryInput.value = documentToEdit.expiry_date || "";
 
     modalSaveButton.textContent = "Save changes";
 
@@ -360,13 +373,14 @@ deleteDocumentButton.addEventListener("click", async (event) => {
         return;
     }
 
-    const documentId = selectedActionDocumentId;
+    deleteClickCount++;
 
-    const confirmed = confirm("Are you sure you want to delete this document?");
-
-    if (!confirmed) {
+    if (deleteClickCount === 1) {
+        deleteDocumentButton.textContent = "Are you sure?";
         return;
     }
+
+    const documentId = selectedActionDocumentId;
 
     const response = await fetch(`/api/documents/${documentId}`, {
         method: "DELETE",
@@ -379,6 +393,9 @@ deleteDocumentButton.addEventListener("click", async (event) => {
 
     documentActionsMenu.hidden = true;
     selectedActionDocumentId = null;
+
+    deleteDocumentButton.textContent = "Delete";
+    deleteClickCount = 0;
 
     await loadDocuments();
     await loadAllDocuments();
