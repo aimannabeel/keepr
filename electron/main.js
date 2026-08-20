@@ -40,6 +40,7 @@ function createWindow() {
   });
 
   mainWindow.maximize()
+  mainWindow.setMenu(null);
 
   mainWindow.loadURL("http://127.0.0.1:8000");
 }

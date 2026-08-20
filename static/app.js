@@ -142,10 +142,10 @@ viewDocumentsButton.addEventListener("click", () => {
     appLayout.classList.toggle("documents-open");
 
     if (appLayout.classList.contains("documents-open")) {
-        viewDocumentsButton.textContent = "Close viewer";
+        viewDocumentsButton.textContent = "Close vault";
     }
     else {
-        viewDocumentsButton.textContent = "View documents";
+        viewDocumentsButton.textContent = "Open vault";
     }
 });
 

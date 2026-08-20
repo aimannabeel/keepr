@@ -14,17 +14,45 @@
             <p class="eyebrow">LOCAL DOCUMENT VAULT</p>
             <h1>Keepr</h1>
             <p class="intro">
-              A private place to store, organise, and find important documents.
+              Store important files locally, add the details you remember, and
+              find them later by name, owner, type, tag, or expiry.
             </p>
 
             <div class="file-checker">
-              <label class="file-label" for="documentInput"
-                >Choose a sample document</label
-              >
+              <label class="file-label" for="documentInput">
+                Add document
+              </label>
               <input id="documentInput" type="file" accept=".pdf,image/*" />
               <button id="viewDocumentsButton" type="button">
-                View documents
+                Open vault
               </button>
+            </div>
+
+            <p class="privacy-note">
+              Files stay on this device. Keepr stores documents locally unless
+              you choose otherwise.
+            </p>
+
+            <div class="vault-summary">
+              <article class="summary-card">
+                <span>Local vault</span>
+                <p>Files stay on this device.</p>
+              </article>
+
+              <article class="summary-card">
+                <span>Searchable</span>
+                <p>Find by name, owner, type, or tag.</p>
+              </article>
+
+              <article class="summary-card">
+                <span>Expiry ready</span>
+                <p>Track dates before they matter.</p>
+              </article>
+            </div>
+
+            <div class="section-heading recent-heading">
+              <h2>Recently saved</h2>
+              <p>Your latest documents added to Keepr.</p>
             </div>
 
             <section class="saved-documents">
