@@ -603,3 +603,11 @@ background-color: var(--color-primary-soft);
 #deleteDocumentButton {
   color: var(--color-accent-warm);
 }
+
+.date-suggestion-message {
+  margin: -8px 0 0;
+  color: var(--color-accent);
+  font-size: 11px;
+  line-height: 1.3;
+  text-align: left;
+}

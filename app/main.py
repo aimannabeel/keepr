@@ -8,6 +8,10 @@ from app.database import (create_tables,
                         update_document_metadata,
                         delete_document_metadata_by_id)
 from app.storage import save_uploaded_file, STORAGE_DIR
+from app.ocr import extract_text_from_image, find_expiry_date
+import tempfile
+from pathlib import Path
+import os
 
 
 app = FastAPI()
@@ -22,11 +26,26 @@ def health_check():
 @app.post("/api/documents/preview")
 async def preview_document(document: UploadFile = File(...)):
     file_bytes = await document.read()
+    suggested_expiry_date = None
+
+    if document.content_type and document.content_type.startswith("image/"):
+        suffix = Path(document.filename).suffix
+
+        temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=suffix)
+        temp_file.write(file_bytes)
+        temp_file.close()
+
+        try:
+            ocr_text = extract_text_from_image(temp_file.name)
+            suggested_expiry_date = find_expiry_date(ocr_text)
+        finally:
+            os.unlink(temp_file.name)
 
     return {
         "filename": document.filename,
         "content_type": document.content_type,
-        "size": len(file_bytes)
+        "size": len(file_bytes),
+        "suggested_expiry_date": suggested_expiry_date
     }
 
 @app.post("/api/documents")

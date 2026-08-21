@@ -19,6 +19,8 @@ const documentActionsMenu = document.querySelector("#documentActionsMenu");
 const editDocumentButton = document.querySelector("#editDocumentButton");
 const deleteDocumentButton = document.querySelector("#deleteDocumentButton");
 
+const dateSuggestionMessage = document.querySelector("#dateSuggestionMessage");
+
 
 
 let previewedDocument = null;
@@ -110,6 +112,15 @@ documentInput.addEventListener("change", async() => {
 
     previewedDocument = data;
 
+    if (data.suggested_expiry_date) {
+        expiryInput.value = data.suggested_expiry_date;
+        dateSuggestionMessage.hidden = false;
+    } 
+    else {
+        expiryInput.value = "";
+        dateSuggestionMessage.hidden = true;
+    } 
+
     openDocumentModal(data.filename);
 });
 
@@ -171,7 +182,7 @@ function renderAllDocuments(documents, emptyMessage = "No saved documents yet.")
         documentRow.innerHTML = `
         <span>${getDocumentTitle(savedDocument)}</span>
         <span>${formatContentType(savedDocument.content_type)}</span>
-        <span>${savedDocument.expiry_date || "-"}</span>
+        <span>${formatDateForDisplay(savedDocument.expiry_date)}</span>
         <span class="document-actions">
         <button type="button" class="view-document-button" data-document-id="${savedDocument.id}">View</button>
         <button type="button" class="download-document-button" data-document-id="${savedDocument.id}">Download</button>
@@ -400,6 +411,15 @@ deleteDocumentButton.addEventListener("click", async (event) => {
     await loadDocuments();
     await loadAllDocuments();
 });
+
+function formatDateForDisplay(dateText) {
+    if (!dateText) {
+        return "-";
+    }
+
+    const [year, month, day] = dateText.split("-");
+    return `${day}/${month}/${year}`;
+}
 
 loadDocuments();
 loadAllDocuments();
