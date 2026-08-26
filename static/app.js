@@ -21,6 +21,9 @@ const deleteDocumentButton = document.querySelector("#deleteDocumentButton");
 
 const dateSuggestionMessage = document.querySelector("#dateSuggestionMessage");
 
+const dateOptionsGroup = document.querySelector("#dateOptionsGroup");
+const dateOptions = document.querySelector("#dateOptions")
+
 
 
 let previewedDocument = null;
@@ -110,16 +113,12 @@ documentInput.addEventListener("change", async() => {
 
     const data = await response.json();
 
+    showDateOptions(data.date_options);
+
     previewedDocument = data;
 
-    if (data.suggested_expiry_date) {
-        expiryInput.value = data.suggested_expiry_date;
-        dateSuggestionMessage.hidden = false;
-    } 
-    else {
-        expiryInput.value = "";
-        dateSuggestionMessage.hidden = true;
-    } 
+    expiryInput.value = "";
+    dateSuggestionMessage.hidden = !data.date_options || data.date_options.length === 0;
 
     openDocumentModal(data.filename);
 });
@@ -420,6 +419,28 @@ function formatDateForDisplay(dateText) {
     const [year, month, day] = dateText.split("-");
     return `${day}/${month}/${year}`;
 }
+
+function showDateOptions(options) {
+    dateOptions.innerHTML = '<option value="">Choose a date...</option>';
+
+    if (!options || options.length === 0) {
+        dateOptionsGroup.classList.add("hidden");
+        return;
+    }
+
+    for (const option of options) {
+        const optionElement = document.createElement("option");
+        optionElement.value = option;
+        optionElement.textContent = formatDateForDisplay(option);
+        dateOptions.appendChild(optionElement);
+    }
+
+    dateOptionsGroup.classList.remove("hidden");
+}
+
+dateOptions.addEventListener("change", () => {
+    expiryInput.value = dateOptions.value;
+});
 
 loadDocuments();
 loadAllDocuments();

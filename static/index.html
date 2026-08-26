@@ -123,10 +123,18 @@
           </label>
           <label>
             Expiry date (optional)
-            <input id="expiryInput" type="date" placeholder="DD-MM-YYYY"/>
+            <input id="expiryInput" type="date"/>
           </label>
+          
+          <div id="dateOptionsGroup" class="date-options-group hidden">
+            <label for="dateOptions">Dates found in document</label>
+            <select id="dateOptions">
+              <option value="">Choose a date...</option>
+            </select>
+          </div>
+
           <p id="dateSuggestionMessage" class="date-suggestion-message" hidden>
-            Keepr found this date in the document. Please check it before saving.          
+            Keepr found dates in the document. Choose one if it is the expiry date.
           </p>
         </div>
 

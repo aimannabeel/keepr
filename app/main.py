@@ -8,7 +8,7 @@ from app.database import (create_tables,
                         update_document_metadata,
                         delete_document_metadata_by_id)
 from app.storage import save_uploaded_file, STORAGE_DIR
-from app.ocr import extract_text_from_image, find_expiry_date
+from app.ocr import extract_text_from_image, find_expiry_date, find_date_options
 import tempfile
 from pathlib import Path
 import os
@@ -27,6 +27,7 @@ def health_check():
 async def preview_document(document: UploadFile = File(...)):
     file_bytes = await document.read()
     suggested_expiry_date = None
+    date_options = []
 
     if document.content_type and document.content_type.startswith("image/"):
         suffix = Path(document.filename).suffix
@@ -38,6 +39,7 @@ async def preview_document(document: UploadFile = File(...)):
         try:
             ocr_text = extract_text_from_image(temp_file.name)
             suggested_expiry_date = find_expiry_date(ocr_text)
+            date_options = find_date_options(ocr_text)
         finally:
             os.unlink(temp_file.name)
 
@@ -45,7 +47,8 @@ async def preview_document(document: UploadFile = File(...)):
         "filename": document.filename,
         "content_type": document.content_type,
         "size": len(file_bytes),
-        "suggested_expiry_date": suggested_expiry_date
+        "suggested_expiry_date": suggested_expiry_date,
+        "date_options": date_options
     }
 
 @app.post("/api/documents")
