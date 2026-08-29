@@ -2,6 +2,7 @@ from PIL import Image
 import pytesseract
 import re
 from pytesseract import Output
+from datetime import datetime
 
 TESSERACT_PATH = r"D:\Tesseract-OCR\tesseract.exe"
 
@@ -104,6 +105,12 @@ def find_date_options(text: str) -> list[str]:
     for match in matches:
         day, month, year = match.group(0).split("/")
         database_date = f"{year}-{month}-{day}"
+
+        try:
+          datetime.strptime(database_date, "%Y-%m-%d")
+        except ValueError:
+          continue
+        
 
         if database_date not in date_options:
             date_options.append(database_date)
