@@ -109,7 +109,7 @@ def find_date_options(text: str) -> list[str]:
         try:
           datetime.strptime(database_date, "%Y-%m-%d")
         except ValueError:
-          continue
+          continue 
         
 
         if database_date not in date_options:
