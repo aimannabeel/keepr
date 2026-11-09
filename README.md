@@ -1,5 +1,5 @@
 # Keepr
-Keepr is a local-first document vault that I am building to help people store, organize, and find important personal or family documents securely.
+Keepr is a local-first document vault that I am building to help people store, organize, and find important personal or family documents locally.
 
 I am building this project in phases while learning full-stack development, frontend/backend communication, databases, local file storage, search, OCR, AI/ML, encryption, Git, and GitHub. Keepr now has a working local MVP for non-sensitive sample documents: users can upload files, add optional metadata and aliases, search saved documents using personal keywords, and view or download stored files.
 
@@ -13,8 +13,8 @@ The long-term idea is that Keepr can understand documents with OCR and AI, but t
 
 - Local FastAPI backend
 - Basic frontend served from FastAPI
-- Simple welcome page
-- Sample document picker
+- Local document vault homepage
+- Document picker for PDF and image files
 - Supports choosing PDF and image files
 - Sends selected files from the browser to the backend
 - Backend receives uploaded files using FastAPI
@@ -39,21 +39,30 @@ The long-term idea is that Keepr can understand documents with OCR and AI, but t
 - Uses a local Python virtual environment
 - Stores dependencies in `requirements.txt`
 - Keeps `.venv`, `.env`, database files, and future vault data out of Git
+- Allows editing saved document metadata
+- Allows deleting both saved metadata and the associated locally stored file
+- Supports expiry date metadata
+- Uses local Tesseract OCR for image uploads
+- Extracts possible expiry-date options from document images
+- Filters malformed and duplicate OCR date options
+- Lets users confirm an OCR-detected expiry date before saving
+- Includes an Electron desktop wrapper that starts the FastAPI backend automatically
 
 ## Current MVP Status
 
-Keepr now has a working local MVP for non-sensitive sample documents. It supports uploading files, saving them locally, adding human-friendly metadata and aliases, searching documents using personal keywords, and viewing or downloading saved files.
+Keepr now has a working local MVP for non-sensitive sample documents. It supports uploading and storing files locally, adding human-friendly metadata and aliases, searching documents using personal keywords, viewing/downloading files, editing or deleting saved documents, and OCR-assisted expiry-date selection for image uploads.
 
-This MVP is still local-development only and should not be used for real sensitive documents until encryption, stronger privacy protections, and a clearer security model are added.
+Keepr currently runs in the browser and through an Electron development wrapper. Windows installer packaging is still planned.
 
 ## Current Limitations
 
-- Files can now be stored locally, but they are not encrypted yet
-- Search currently depends on filenames and user-added metadata/tags, not OCR content
-- No OCR yet
-- No current/archive status yet
-- No expiry date tracking yet
-- No encryption yet
+- Files are stored locally but are not encrypted yet
+- OCR currently supports image uploads only, not PDFs
+- OCR returns possible date options; the user must confirm the correct expiry date
+- Search currently depends on filenames and user-added metadata/tags, not OCR text content
+- No expiry dashboard, reminders, or notifications yet
+- No backup/export or restore workflow yet
+- No password-based access control or encryption yet
 - Keepr should not be used with real personal documents yet
 
 ## Tech Stack
@@ -61,6 +70,12 @@ This MVP is still local-development only and should not be used for real sensiti
 - Python
 - FastAPI
 - Uvicorn
+- SQLite
+- Tesseract OCR
+- pytesseract
+- Pillow
+- Electron
+- Node.js
 - HTML
 - CSS
 - JavaScript
@@ -74,6 +89,9 @@ app/
   main.py          # FastAPI app, API routes, upload preview route, and static file serving
   database.py      # SQLite connection, table creation, and document metadata helpers
   storage.py       # Local file storage helpers for generated internal filenames
+  ocr.py           # Local Tesseract OCR and date-option extraction
+  electron/
+    main.js        # Electron desktop wrapper
 
 
 static/
@@ -82,6 +100,7 @@ static/
   app.js          # Frontend JavaScript
 
 requirements.txt  # Python dependencies
+package.json       # Electron/Node configuration
 README.md         # Project notes and setup instructions
 .gitignore        # Files and folders Git should ignore
 ```
@@ -162,15 +181,21 @@ http://127.0.0.1:8000/api/health
 - [x] Support multi-word searches like `dad pan`, `aiman passport`, or `passport aiman`
 - [x] Add expiry date field
 - [x] Add people-based browsing
-- [x] Add document actions menu for rename, edit details, archive, and delete
+- [x] Add document actions menu for edit details and delete
+- [ ] Add archive action
 - [x] Delete both database metadata and locally stored file safely
 
 ### Phase 5: OCR and Structured Metadata
 
-- [ ] Add local OCR for PDFs/images
-- [ ] Extract text from uploaded documents
+- [x] Add local OCR for image uploads
+- [x] Extract text from uploaded images
+- [x] Extract possible date options from OCR text
+- [x] Filter malformed and duplicate OCR date options
+- [x] Let users select and confirm an extracted expiry date
+- [ ] Add local OCR for PDFs
 - [ ] Detect document type
-- [ ] Extract useful metadata such as dates and document numbers
+- [ ] Extract useful metadata such as names, document numbers, and dates
+- [ ] Use OCR layout information for more reliable document understanding
 - [ ] Let users confirm or edit extracted metadata
 
 ### Phase 6: Expiry Reminders
@@ -179,6 +204,13 @@ http://127.0.0.1:8000/api/health
 - [ ] Show documents expiring soon
 - [ ] Add simple reminder settings
 - [ ] Add document cards
+
+### Desktop App Development
+
+- [x] Add Electron development wrapper
+- [x] Automatically start FastAPI backend from Electron
+- [ ] Package Keepr as a Windows installer
+- [ ] Bundle Python, Tesseract, and app dependencies for end users
 
 ### Phase 7: Privacy and Security
 
